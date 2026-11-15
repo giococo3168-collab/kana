@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="가나 연습">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="icon-192.png">
+<title>가나 쓰기 연습</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Klee+One:wght@400;600&family=Noto+Sans+KR:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: 차분한 연습장 — 선생님이 나눠준 깨끗한 쓰기 워크북
+   IDEA: 일본 원고지(겐코요시) — 붉은 칸과 점선 십자 보조선
+   PICTURE: 큰 연습 칸에 교과서체 글자가 비치고, 그 위에 직접 따라 씀
+   COLOUR and TYPE: 흰 종이, 먹색 잉크, 주홍 칸선, 남색 선택 / Klee One(교과서체) + Noto Sans KR
+   LAYOUT: 연습 칸 + 줄 연습 왼쪽, 50음도 표 오른쪽, 600px 아래는 세로로 */
+:root{color-scheme:light dark;
+--bg:light-dark(#ffffff,#131418);--paper:light-dark(#ffffff,#1a1c21);--ink:light-dark(#1b1b1f,#eceae4);
+--mute:light-dark(#6b6b72,#9a9aa3);--grid:light-dark(#d9452b,#e0644c);--gridsoft:light-dark(#f2b8ab,#5a2c25);
+--acc:light-dark(#24407a,#8fb0ef);--accbg:light-dark(#e8eefb,#1f2a44);--line:light-dark(#e6e4df,#2b2d33);--done:light-dark(#2f7a4f,#6cc795)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 "Noto Sans KR",system-ui,sans-serif;overflow-x:clip}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.band{padding:max(clamp(20px,3vw,40px),env(safe-area-inset-top)) max(4vw,16px,env(safe-area-inset-right));max-width:1240px;margin:0 auto}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:16px;border-bottom:2px solid var(--grid);padding-bottom:16px}
+h1{font-size:clamp(26px,4vw,40px);line-height:1.1;margin:0;text-wrap:balance;font-weight:800}
+h1 small{display:block;font:600 15px/1.4 "Noto Sans KR";color:var(--mute);margin-top:6px}
+.seg{display:inline-flex;border:2px solid var(--ink);border-radius:999px;overflow:hidden}
+.seg button{border:0;background:none;padding:10px 20px;min-height:44px;font-weight:600}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.main{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(20px,3vw,44px);margin-top:24px}
+.cell{position:relative;background:var(--paper);border:2px solid var(--grid);aspect-ratio:1}
+.cell svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cell .g{position:absolute;inset:0;display:grid;place-items:center;font-family:"Klee One",serif;font-weight:400;color:var(--ink);pointer-events:none;line-height:1;transition:opacity .2s}
+.cell canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;cursor:crosshair}
+.big{max-width:520px;width:100%}
+.big .g{font-size:min(68vw,330px)}
+.info{display:flex;align-items:baseline;gap:14px;margin:14px 0 4px;flex-wrap:wrap}
+.info .ro{font:600 28px/1 "Noto Sans KR";letter-spacing:.02em}
+.info .ko{font-size:20px;color:var(--mute)}
+.info .tag{margin-left:auto;font-size:14px;color:var(--mute)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 18px}
+.btn{border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:9px 14px;min-height:44px;font-size:15px;font-weight:600}
+.btn:hover{border-color:var(--ink)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.on{background:var(--done);border-color:var(--done);color:#fff}
+.row{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));border-left:2px solid var(--grid)}
+.row .cell{border-left:0}
+.row .g{font-size:min(10vw,62px)}
+.lbl{font-size:14px;color:var(--mute);margin:0 0 8px}
+.test{display:none;margin:12px 0 0;padding:14px 16px;border-radius:12px;background:var(--accbg);color:var(--acc);font-weight:600}
+.testing .test{display:block}
+h2{font-size:18px;margin:0 0 10px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+h2 span{font-size:14px;color:var(--mute);font-weight:400}
+.tbl{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;margin-bottom:22px}
+.k{position:relative;border:1.5px solid var(--line);background:var(--paper);border-radius:10px;padding:6px 2px 4px;min-height:58px;text-align:center}
+.k b{display:block;font:400 clamp(22px,3vw,28px)/1.15 "Klee One",serif}
+.k i{font-style:normal;font-size:13px;color:var(--mute)}
+.k:hover{border-color:var(--ink)}
+.k s{position:absolute;top:4px;left:6px;font-size:11px;font-weight:800;text-decoration:none;color:var(--acc)}
+.k[aria-current=true]{border-color:var(--acc);background:var(--accbg);box-shadow:inset 0 0 0 1.5px var(--acc)}
+.k.d::after{content:"";position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:var(--done)}
+.k.x{visibility:hidden}
+.bar{height:8px;background:var(--line);border-radius:9px;overflow:hidden;margin:-4px 0 18px}
+.bar div{height:100%;background:var(--done);transition:width .3s}
+.tips{margin-top:8px;border-top:2px solid var(--grid)}
+.tips h3{font-size:18px;margin:20px 0 10px}
+.tipg{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.tip{border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--paper)}
+.tip .p{display:flex;gap:6px;margin-bottom:6px}
+.tip .p button{border:0;background:var(--accbg);color:var(--acc);border-radius:8px;font:600 26px/1 "Klee One",serif;padding:6px 10px;min-height:44px;min-width:44px}
+.tip p{margin:0;font-size:15px;color:var(--mute)}
+.lk{border:0;background:none;color:var(--acc);font-weight:600;text-decoration:underline;padding:0 4px;min-height:32px}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.pills button{border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 16px;min-height:44px;font-weight:600}
+.pills button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.note{background:var(--accbg);color:var(--acc);border-radius:12px;padding:12px 16px;margin-bottom:14px;font-size:15px}
+.note b{font-weight:800}
+.wg{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;padding-bottom:30px}
+.w{border:1.5px solid var(--line);background:var(--paper);border-radius:12px;padding:12px 14px;text-align:left;display:grid;gap:2px}
+.wc{position:relative;display:grid}.wc .w{padding-right:58px;height:100%}.wsp{position:absolute;top:8px;right:8px;z-index:1}
+.w:hover{border-color:var(--ink)}
+.w[aria-current=true]{border-color:var(--acc);box-shadow:inset 0 0 0 1.5px var(--acc)}
+.w b{font:600 25px/1.2 "Klee One",serif}
+.w .kj{font-size:14px;color:var(--mute)}
+.w .m{font-weight:600}
+.w .x{font-size:13px;color:var(--mute)}
+.sg{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.sg .w b{font-size:21px;line-height:1.35}
+[hidden]{display:none!important}
+body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
+.tab{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--paper);border-top:2px solid var(--grid);padding-bottom:env(safe-area-inset-bottom)}
+.tab button{border:0;background:none;min-height:64px;font-size:13px;font-weight:600;color:var(--mute);display:grid;place-items:center;gap:0;padding:6px 0}
+.tab b{font:600 24px/1 "Klee One",serif}
+.tab button[aria-current=true]{color:var(--grid)}
+.tips[data-view=words],.tips[data-view=sent]{border-top:0}
+canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.res{margin:10px 0 0;padding:12px 16px;border-radius:12px;font-weight:600}
+.res.ok{background:light-dark(#e3f4ea,#16301f);color:var(--done)}
+.res.ng{background:light-dark(#fdeae6,#3a1d18);color:var(--grid)}
+.res.tip{background:var(--accbg);color:var(--acc);font-weight:400;font-size:15px}
+.cell.ok::after{content:"✓";position:absolute;top:4px;right:8px;color:var(--done);font-weight:800;font-size:clamp(14px,3vw,22px);pointer-events:none}
+.res small{display:block;font-weight:400;font-size:13px;opacity:.8;margin-top:2px}
+.spk{border:1.5px solid var(--line);background:var(--paper);color:var(--acc);border-radius:999px;min-height:44px;padding:6px 14px;display:inline-flex;gap:6px;align-items:center;font-weight:600;font-size:15px}
+.spk:hover{border-color:var(--acc)}.spk.sm{min-height:36px;padding:4px 10px;vertical-align:middle}
+@media(max-width:860px){.main{grid-template-columns:minmax(0,1fr)}.big{margin:0 auto}}
+@media(max-width:600px){header{padding-bottom:10px}h1{font-size:22px}h1 small{display:none}.main{margin-top:14px}.big{max-width:min(100%,62vh)}.row{grid-template-columns:repeat(3,minmax(0,1fr))}.row .g{font-size:min(18vw,62px)}.btn{padding:9px 11px}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="band">
+<header>
+  <h1>히라가나 · 가타카나 쓰기 연습<small>칸 위에 손가락·펜·마우스로 비친 글자를 따라 써 보세요</small></h1>
+  <div class="seg" role="group" aria-label="문자 종류">
+    <button id="mH" aria-pressed="true">히라가나</button><button id="mK" aria-pressed="false">가타카나</button>
+  </div>
+</header>
+
+<div class="main" data-view="write">
+<section id="pad">
+  <div class="cell big" id="big"></div>
+  <div class="info"><span class="ro" id="ro"></span><span class="ko" id="ko"></span><button class="spk" id="spk" aria-label="발음 듣기"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>듣기</button><span class="tag" id="tag"></span></div>
+  <div class="test" id="testMsg"></div>
+  <div class="res" id="res" hidden></div>
+  <div class="tools">
+    <button class="btn" id="chk">+1 직접 추가</button>
+    <button class="btn" id="prev">← 이전</button>
+    <button class="btn" id="next">다음 →</button>
+    <button class="btn" id="snd">자동 발음: 켜짐</button>
+    <button class="btn" id="undo">되돌리기</button>
+    <button class="btn" id="clr">모두 지우기</button>
+    <button class="btn" id="gd">보조 글자: 진하게</button>
+    <button class="btn" id="dn">✓ 다 외웠어요</button>
+    <button class="btn pri" id="tst">테스트 모드</button>
+  </div>
+  <p class="lbl"><button class="spk sm" id="spk2" aria-label="단어 발음 듣기"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button> <span id="rl">줄 연습 — 갈수록 보조 글자가 옅어져요</span> <button class="lk" id="wx" hidden>단어 연습 끝내기</button></p>
+  <div class="row" id="row"></div>
+</section>
+
+<section>
+  <h2>청음 (기본 46자) <span id="cnt"></span></h2>
+  <div class="bar"><div id="prog" style="width:0"></div></div>
+  <div class="tbl" id="t1"></div>
+  <h2>탁음 · 반탁음 (25자)</h2>
+  <div class="tbl" id="t2"></div>
+</section>
+</div>
+
+<div class="tips" data-view="write">
+  <h3>헷갈리기 쉬운 글자</h3>
+  <div class="tipg" id="tips"></div>
+</div>
+
+<div class="tips" id="voc" data-view="words">
+  <h3>꼭 필요한 기초 단어</h3>
+  <div class="pills" id="vt" role="group" aria-label="단어 분류"></div>
+  <div class="note" id="vnote"></div>
+  <div class="wg" id="wg"></div>
+</div>
+
+<div class="tips" id="sen" data-view="sent">
+  <h3>실용 문장 100</h3>
+  <div class="pills" id="st" role="group" aria-label="상황"></div>
+  <div class="note">문장을 누르면 위 <b>줄 연습</b> 칸에 문장이 깔려요. 띄어쓰기는 읽기 쉽게 넣은 것이고, 실제 일본어는 띄어 쓰지 않아요. 조사 <b>は</b>는 ‘와’, <b>を</b>는 ‘오’, <b>へ</b>는 ‘에’로 읽어요. ‘-’는 앞 소리를 길게 읽으라는 표시예요.</div>
+  <div class="wg sg" id="sg"></div>
+</div>
+</div>
+
+<nav class="tab" aria-label="메뉴">
+  <button data-go="write"><b>あ</b>글자 쓰기</button>
+  <button data-go="words"><b>語</b>단어</button>
+  <button data-go="sent"><b>文</b>문장</button>
+  <button data-go="test"><b>？</b>테스트</button>
+</nav>
+<script>
+{
+const R1=[['あいうえお','a i u e o','아 이 우 에 오'],['かきくけこ','ka ki ku ke ko','카 키 쿠 케 코'],['さしすせそ','sa shi su se so','사 시 스 세 소'],['たちつてと','ta chi tsu te to','타 치 츠 테 토'],['なにぬねの','na ni nu ne no','나 니 누 네 노'],['はひふへほ','ha hi fu he ho','하 히 후 헤 호'],['まみむめも','ma mi mu me mo','마 미 무 메 모'],['や・ゆ・よ','ya - yu - yo','야 - 유 - 요'],['らりるれろ','ra ri ru re ro','라 리 루 레 로'],['わ・・・を','wa - - - wo','와 - - - 오'],['ん・・・・','n - - - -','응(ㄴ/ㅇ/ㅁ 받침) - - - -']];
+const R2=[['がぎぐげご','ga gi gu ge go','가 기 구 게 고'],['ざじずぜぞ','za ji zu ze zo','자 지 즈 제 조'],['だぢづでど','da ji zu de do','다 지 즈 데 도'],['ばびぶべぼ','ba bi bu be bo','바 비 부 베 보'],['ぱぴぷぺぽ','pa pi pu pe po','파 피 푸 페 포']];
+const TIPS=[['さち','さ의 아래 곡선은 C처럼 오른쪽이 열리고, ち는 반대로 왼쪽이 열려요.'],['ぬめ','ぬ는 끝에 작은 고리가 있고, め는 고리 없이 끝나요.'],['われね','마지막 획: わ는 둥글게 감싸고, れ는 꼬리가 바깥으로 빠지고, ね는 작은 고리.'],['るろ','る는 끝에 고리가 있고, ろ는 고리 없이 끝나요.'],['シツ','シ는 점이 왼쪽에 세로로, 마지막 획은 아래→위. ツ는 점이 위쪽에 가로로, 마지막 획은 위→아래.'],['ソン','ソ의 첫 점은 위에서 내려 긋고, ン의 첫 점은 가로로 눕혀요. ン의 마지막 획은 아래→위.'],['クタ','タ는 ク 안쪽에 짧은 획이 하나 더 들어가요.'],['ウワ','ウ는 위에 짧은 세로 점이 있고, ワ는 없어요.']];
+const V=[
+['명사',`단어를 누르면 위 <b>줄 연습</b> 칸에 그 단어가 깔려요. 한자는 참고용이에요.`,[
+['わたし','私','와타시','나, 저'],['ひと','人','히토','사람'],['ともだち','友達','토모다치','친구'],['かぞく','家族','카조쿠','가족'],['なまえ','名前','나마에','이름'],['いえ','家','이에','집'],['みず','水','미즈','물'],['ごはん','ご飯','고한','밥, 식사'],['おかね','お金','오카네','돈'],['くすり','薬','쿠스리','약'],['みせ','店','미세','가게'],['えき','駅','에키','역'],['くるま','車','쿠루마','자동차'],['でんしゃ','電車','덴샤','전철'],['かいしゃ','会社','카이샤','회사'],['しごと','仕事','시고토','일, 업무'],['がっこう','学校','갓코-','학교'],['じかん','時間','지칸','시간'],['いま','今','이마','지금'],['きょう','今日','쿄-','오늘'],['あした','明日','아시타','내일'],['きのう','昨日','키노-','어제']]],
+['외래어(가타카나)',`외래어는 가타카나로 써요. <b>ー</b>는 장음 표시로, 앞 모음을 길게 읽어요 (コーヒー = 코-히-).`,[
+['コーヒー','','코-히-','커피'],['パン','','판','빵'],['ビール','','비-루','맥주'],['テレビ','','테레비','텔레비전'],['スマホ','','스마호','스마트폰'],['カード','','카-도','카드'],['ホテル','','호테루','호텔'],['タクシー','','타쿠시-','택시'],['バス','','바스','버스'],['トイレ','','토이레','화장실'],['コンビニ','','콘비니','편의점'],['レストラン','','레스토란','레스토랑']]],
+['인사말',`조사로 쓰인 <b>は</b>는 ‘wa’로 읽어요 (こんにちは = 콘니치와). 작은 ゃ·ゅ·ょ·っ는 칸 하나를 차지하되 작게 써요.`,[
+['こんにちは','','콘니치와','안녕하세요 (낮)'],['おはようございます','','오하요- 고자이마스','안녕하세요 (아침)'],['こんばんは','','콘반와','안녕하세요 (저녁)'],['ありがとうございます','','아리가토- 고자이마스','감사합니다'],['すみません','','스미마센','죄송합니다 / 저기요'],['おねがいします','お願いします','오네가이 시마스','부탁합니다'],['はい','','하이','네'],['いいえ','','이이에','아니요'],['いくらですか','','이쿠라 데스 카','얼마예요?'],['いただきます','','이타다키마스','잘 먹겠습니다'],['さようなら','','사요-나라','안녕히 가세요']]],
+['い형용사',`끝이 <b>い</b>로 끝나요. 부정은 い를 빼고 <b>くない</b> (たかい → たかくない), 과거는 <b>かった</b> (たかかった). 예외: いい → よくない · よかった.`,[
+['おおきい','大きい','오-키이','크다'],['ちいさい','小さい','치이사이','작다'],['たかい','高い','타카이','비싸다, 높다'],['やすい','安い','야스이','싸다'],['おいしい','美味しい','오이시이','맛있다'],['いい','良い','이이','좋다'],['わるい','悪い','와루이','나쁘다'],['あたらしい','新しい','아타라시이','새롭다'],['ふるい','古い','후루이','낡다, 오래되다'],['あつい','暑い','아츠이','덥다'],['さむい','寒い','사무이','춥다'],['たのしい','楽しい','타노시이','즐겁다'],['むずかしい','難しい','무즈카시이','어렵다'],['はやい','早い/速い','하야이','이르다, 빠르다'],['ちかい','近い','치카이','가깝다'],['とおい','遠い','토-이','멀다'],['かわいい','可愛い','카와이이','귀엽다']]],
+['な형용사',`명사 앞에서 <b>な</b>를 붙여요 (しずかな へや = 조용한 방). 부정은 <b>じゃない</b> (しずかじゃない), 문장 끝은 <b>です</b> (しずかです).`,[
+['すき','好き','스키','좋아하다'],['きらい','嫌い','키라이','싫어하다'],['じょうず','上手','조-즈','잘하다'],['へた','下手','헤타','서투르다'],['きれい','綺麗','키레이','예쁘다, 깨끗하다'],['しずか','静か','시즈카','조용하다'],['にぎやか','賑やか','니기야카','번화하다'],['げんき','元気','겐키','건강하다, 활기차다'],['べんり','便利','벤리','편리하다'],['ゆうめい','有名','유-메이','유명하다'],['かんたん','簡単','칸탄','간단하다'],['たいせつ','大切','타이세츠','소중하다']]],
+['동사',`<b>1그룹</b>: 어미가 う단 → ます형은 い단 + ます (のむ → のみます). <b>2그룹</b>: いる·える로 끝남 → る를 빼고 ます (たべる → たべます). <b>3그룹</b>: する·くる 두 개뿐(불규칙). かえる·はいる는 2그룹처럼 생겼지만 1그룹이에요.`,[
+['いく','行く','이쿠','가다','1그룹 · いきます'],['くる','来る','쿠루','오다','3그룹 · きます'],['かえる','帰る','카에루','돌아가다','1그룹 · かえります'],['あう','会う','아우','만나다','1그룹 · あいます'],['かう','買う','카우','사다','1그룹 · かいます'],['のむ','飲む','노무','마시다','1그룹 · のみます'],['たべる','食べる','타베루','먹다','2그룹 · たべます'],['みる','見る','미루','보다','2그룹 · みます'],['よむ','読む','요무','읽다','1그룹 · よみます'],['かく','書く','카쿠','쓰다','1그룹 · かきます'],['はなす','話す','하나스','말하다','1그룹 · はなします'],['きく','聞く','키쿠','듣다, 묻다','1그룹 · ききます'],['まつ','待つ','마츠','기다리다','1그룹 · まちます'],['わかる','分かる','와카루','알다, 이해하다','1그룹 · わかります'],['ある','','아루','있다 (사물)','1그룹 · あります'],['いる','','이루','있다 (사람·동물)','2그룹 · います'],['はいる','入る','하이루','들어가다','1그룹 · はいります'],['ねる','寝る','네루','자다','2그룹 · ねます'],['おきる','起きる','오키루','일어나다','2그룹 · おきます'],['する','','스루','하다','3그룹 · します'],['べんきょうする','勉強する','벤쿄- 스루','공부하다','3그룹 · べんきょうします']]]];
+const SN=[["인사·기본", [["はじめまして。", "하지메마시테", "처음 뵙겠습니다."], ["よろしく おねがいします。", "요로시쿠 오네가이 시마스", "잘 부탁드립니다."], ["おげんきですか。", "오겐키 데스 카", "잘 지내세요?"], ["げんきです。", "겐키 데스", "잘 지내요."], ["また あした。", "마타 아시타", "내일 봐요."], ["おつかれさまです。", "오츠카레사마 데스", "수고하셨습니다."], ["だいじょうぶです。", "다이조-부 데스", "괜찮아요."], ["わかりました。", "와카리마시타", "알겠습니다."], ["わかりません。", "와카리마센", "모르겠어요."], ["もう いちど おねがいします。", "모- 이치도 오네가이 시마스", "한 번 더 말해 주세요."], ["ゆっくり はなして ください。", "윳쿠리 하나시테 쿠다사이", "천천히 말해 주세요."], ["にほんごが すこし わかります。", "니혼고 가 스코시 와카리마스", "일본어를 조금 알아요."]]], ["자기소개", [["わたしは キムです。", "와타시 와 키무 데스", "저는 김입니다."], ["かんこくじんです。", "칸코쿠진 데스", "한국 사람이에요."], ["ソウルから きました。", "소-루 카라 키마시타", "서울에서 왔어요."], ["かいしゃいんです。", "카이샤인 데스", "회사원이에요."], ["しごとで きました。", "시고토 데 키마시타", "일 때문에 왔어요."], ["にほんごを べんきょうして います。", "니혼고 오 벤쿄- 시테 이마스", "일본어를 공부하고 있어요."], ["しゅみは りょうりです。", "슈미 와 료-리 데스", "취미는 요리예요."], ["これは わたしの めいしです。", "코레 와 와타시 노 메이시 데스", "이건 제 명함이에요."]]], ["쇼핑", [["これは いくらですか。", "코레 와 이쿠라 데스 카", "이거 얼마예요?"], ["これを ください。", "코레 오 쿠다사이", "이거 주세요."], ["みて いるだけです。", "미테 이루 다케 데스", "그냥 보는 중이에요."], ["ほかの いろは ありますか。", "호카 노 이로 와 아리마스 카", "다른 색 있어요?"], ["もっと おおきい サイズは ありますか。", "못토 오-키이 사이즈 와 아리마스 카", "더 큰 사이즈 있어요?"], ["しちゃく できますか。", "시차쿠 데키마스 카", "입어 봐도 돼요?"], ["ためして みても いいですか。", "타메시테 미테 모 이이 데스 카", "발라 봐도(써 봐도) 돼요?"], ["カードで はらえますか。", "카-도 데 하라에마스 카", "카드로 계산돼요?"], ["めんぜいに なりますか。", "멘제이 니 나리마스 카", "면세 되나요?"], ["ふくろを ください。", "후쿠로 오 쿠다사이", "봉투 주세요."], ["ふくろは いりません。", "후쿠로 와 이리마센", "봉투는 필요 없어요."], ["レシートを ください。", "레시-토 오 쿠다사이", "영수증 주세요."], ["すこし やすく なりませんか。", "스코시 야스쿠 나리마센 카", "조금 싸게 안 될까요?"], ["にんきの しょうひんは どれですか。", "닌키 노 쇼-힌 와 도레 데스 카", "인기 상품은 어느 거예요?"]]], ["식당", [["ふたりです。", "후타리 데스", "두 명이에요."], ["よやくして います。", "요야쿠 시테 이마스", "예약했어요."], ["メニューを ください。", "메뉴- 오 쿠다사이", "메뉴판 주세요."], ["おすすめは なんですか。", "오스스메 와 난 데스 카", "추천 메뉴는 뭐예요?"], ["これに します。", "코레 니 시마스", "이걸로 할게요."], ["ビールを ふたつ ください。", "비-루 오 후타츠 쿠다사이", "맥주 두 잔 주세요."], ["みずを ください。", "미즈 오 쿠다사이", "물 주세요."], ["からく しないで ください。", "카라쿠 시나이데 쿠다사이", "맵지 않게 해 주세요."], ["にくは たべられません。", "니쿠 와 타베라레마센", "고기는 못 먹어요."], ["おいしいです。", "오이시이 데스", "맛있어요."], ["もちかえり できますか。", "모치카에리 데키마스 카", "포장 되나요?"], ["おかいけい おねがいします。", "오카이케이 오네가이 시마스", "계산해 주세요."], ["べつべつで おねがいします。", "베츠베츠 데 오네가이 시마스", "따로 계산해 주세요."], ["ごちそうさまでした。", "고치소-사마 데시타", "잘 먹었습니다."]]], ["교통·길", [["えきは どこですか。", "에키 와 도코 데스 카", "역이 어디예요?"], ["トイレは どこですか。", "토이레 와 도코 데스 카", "화장실이 어디예요?"], ["ここから とおいですか。", "코코 카라 토-이 데스 카", "여기서 멀어요?"], ["あるいて いけますか。", "아루이테 이케마스 카", "걸어서 갈 수 있어요?"], ["この でんしゃは しんじゅくに いきますか。", "코노 덴샤 와 신주쿠 니 이키마스 카", "이 전철 신주쿠 가요?"], ["きっぷは どこで かいますか。", "킷푸 와 도코 데 카이마스 카", "표는 어디서 사요?"], ["つぎの えきは どこですか。", "츠기 노 에키 와 도코 데스 카", "다음 역은 어디예요?"], ["この じゅうしょまで おねがいします。", "코노 주-쇼 마데 오네가이 시마스", "이 주소까지 가 주세요."], ["どのくらい かかりますか。", "도노 쿠라이 카카리마스 카", "얼마나 걸려요?"], ["ここで おろして ください。", "코코 데 오로시테 쿠다사이", "여기서 내려 주세요."], ["まっすぐ いって ください。", "맛스구 잇테 쿠다사이", "똑바로 가 주세요."], ["みぎに まがって ください。", "미기 니 마갓테 쿠다사이", "오른쪽으로 돌아 주세요."], ["みちに まよいました。", "미치 니 마요이마시타", "길을 잃었어요."], ["ちずを かいて ください。", "치즈 오 카이테 쿠다사이", "약도 좀 그려 주세요."]]], ["호텔", [["チェックイン おねがいします。", "쳇쿠인 오네가이 시마스", "체크인 부탁해요."], ["よやくした キムです。", "요야쿠 시타 키무 데스", "예약한 김입니다."], ["にもつを あずかって ください。", "니모츠 오 아즈캇테 쿠다사이", "짐 좀 맡아 주세요."], ["チェックアウトは なんじですか。", "쳇쿠아우토 와 난지 데스 카", "체크아웃은 몇 시예요?"], ["ちょうしょくは なんじからですか。", "초-쇼쿠 와 난지 카라 데스 카", "조식은 몇 시부터예요?"], ["ワイファイの パスワードは なんですか。", "와이화이 노 파스와-도 와 난 데스 카", "와이파이 비밀번호가 뭐예요?"], ["タオルを もう ひとつ ください。", "타오루 오 모- 히토츠 쿠다사이", "수건 하나 더 주세요."], ["へやの かぎを なくしました。", "헤야 노 카기 오 나쿠시마시타", "방 열쇠를 잃어버렸어요."]]], ["업무·비즈니스", [["いつも おせわに なって おります。", "이츠모 오세와 니 낫테 오리마스", "항상 신세 지고 있습니다. (메일·전화 첫인사)"], ["おじかんを いただき ありがとうございます。", "오지칸 오 이타다키 아리가토- 고자이마스", "시간 내 주셔서 감사합니다."], ["しょうしょう おまちください。", "쇼-쇼- 오마치 쿠다사이", "잠시만 기다려 주세요."], ["かくにんして ごれんらく します。", "카쿠닌 시테 고렌라쿠 시마스", "확인하고 연락드리겠습니다."], ["しりょうを おくります。", "시료- 오 오쿠리마스", "자료를 보내 드릴게요."], ["メールで おくって ください。", "메-루 데 오쿳테 쿠다사이", "메일로 보내 주세요."], ["みつもりを おねがいします。", "미츠모리 오 오네가이 시마스", "견적 부탁드립니다."], ["のうきは いつですか。", "노-키 와 이츠 데스 카", "납기는 언제예요?"], ["ざいこは ありますか。", "자이코 와 아리마스 카", "재고 있어요?"], ["さいていの ちゅうもんすうりょうは いくつですか。", "사이테이 노 추-몬 스-료- 와 이쿠츠 데스 카", "최소 주문 수량은 몇 개예요?"], ["サンプルを もらえますか。", "산푸루 오 모라에마스 카", "샘플 받을 수 있을까요?"], ["けんとうして みます。", "켄토- 시테 미마스", "검토해 보겠습니다."], ["らいしゅう おあいしましょう。", "라이슈- 오아이 시마쇼-", "다음 주에 뵙시다."], ["よろしく おつたえ ください。", "요로시쿠 오츠타에 쿠다사이", "안부 전해 주세요."]]], ["가게 응대", [["いらっしゃいませ。", "이랏샤이마세", "어서 오세요."], ["なにか おさがしですか。", "나니카 오사가시 데스 카", "찾으시는 거 있으세요?"], ["こちらが にんきです。", "코치라 가 닌키 데스", "이쪽이 인기 상품이에요."], ["テスターを どうぞ。", "테스타- 오 도-조", "테스터 써 보세요."], ["パスポートを おねがいします。", "파스포-토 오 오네가이 시마스", "여권 부탁드립니다."], ["にもつは むりょうで おあずかり します。", "니모츠 와 무료- 데 오아즈카리 시마스", "짐은 무료로 맡아 드려요."], ["ありがとうございました。", "아리가토- 고자이마시타", "감사합니다. (손님 배웅)"], ["また おこしください。", "마타 오코시 쿠다사이", "또 오세요."]]], ["긴급·병원", [["たすけて ください。", "타스케테 쿠다사이", "도와주세요."], ["びょういんは どこですか。", "뵤-인 와 도코 데스 카", "병원이 어디예요?"], ["あたまが いたいです。", "아타마 가 이타이 데스", "머리가 아파요."], ["おなかが いたいです。", "오나카 가 이타이 데스", "배가 아파요."], ["くすりを ください。", "쿠스리 오 쿠다사이", "약 주세요."], ["さいふを なくしました。", "사이후 오 나쿠시마시타", "지갑을 잃어버렸어요."], ["けいさつを よんで ください。", "케이사츠 오 욘데 쿠다사이", "경찰을 불러 주세요."], ["かんこくごが できる ひとは いますか。", "칸코쿠고 가 데키루 히토 와 이마스 카", "한국어 하는 분 계세요?"]]]];
+let vc=0,sc=0,wd=null;
+const kata=c=>c==='・'?c:String.fromCharCode(c.charCodeAt(0)+0x60);
+const build=rows=>rows.flatMap(([s,r,k])=>{const rr=r.split(' '),kk=k.split(' ');return [...s].map((c,i)=>({c,r:rr[i],k:kk[i]}))});
+const T1=build(R1),T2=build(R2),ALL=[...T1,...T2].filter(x=>x.c!=='・');
+const $=id=>document.getElementById(id);
+const st=(k,v)=>{try{return v===undefined?JSON.parse(localStorage.getItem(k)):localStorage.setItem(k,JSON.stringify(v))}catch(e){return null}};
+let kat=false,idx=0,glv=0,testing=false,reveal=false,done=new Set(st('kana-done')||[]);
+const ch=x=>kat?kata(x.c):x.c;
+const GRID='<svg aria-hidden="true"><line x1="50%" y1="0" x2="50%" y2="100%" stroke="var(--gridsoft)" stroke-width="1.5" stroke-dasharray="6 6"/><line x1="0" y1="50%" x2="100%" y2="50%" stroke="var(--gridsoft)" stroke-width="1.5" stroke-dasharray="6 6"/></svg>';
+const hist=[];let onStroke=()=>{};
+const SH=[3,2,2,2,3,3,4,1,3,2,3,1,2,3,1,4,2,1,1,2,4,3,2,2,1,3,1,4,1,4,3,2,3,2,3,3,2,2,2,2,1,2,1,2,3,1];
+const SK=[2,2,3,3,3,2,3,2,3,2,3,3,2,2,2,3,3,3,3,2,2,2,2,4,1,2,2,1,1,4,2,3,2,2,3,2,2,3,2,2,2,1,3,2,3,2];
+const SM={};T1.filter(x=>x.c!=='・').forEach((x,i)=>{SM[x.c]=SH[i];SM[kata(x.c)]=SK[i]});
+const fc=(c,d)=>String.fromCharCode(c.charCodeAt(0)-d);
+const SMALL='ぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮ';
+const strokesOf=c=>SM[c]!=null?SM[c]:SM[fc(c,1)]!=null?SM[fc(c,1)]+2:SM[fc(c,2)]+1;
+let cnt=st('kana-cnt')||{};let autoCheck=()=>{};
+const need=c=>{if(SMALL.includes(c))c=String.fromCharCode(c.charCodeAt(0)+1);const k=strokesOf(c),v=Number.isFinite(k)?k:1;return v>=3?v-1:v};
+function Pad(el){
+  el.innerHTML=GRID+'<div class="g"></div><canvas></canvas>';
+  const cv=el.querySelector('canvas'),g=el.querySelector('.g'),cx=cv.getContext('2d');
+  const p={el,g,strokes:[],draw(){const w=cv.clientWidth,h=cv.clientHeight,d=devicePixelRatio||1;
+    if(cv.width!==Math.round(w*d)){cv.width=Math.round(w*d);cv.height=Math.round(h*d)}
+    cx.setTransform(d,0,0,d,0,0);cx.clearRect(0,0,w,h);cx.lineCap=cx.lineJoin='round';
+    cx.strokeStyle=getComputedStyle(document.body).color;cx.lineWidth=Math.max(3,w*0.04);
+    for(const s of p.strokes){cx.beginPath();s.forEach((q,i)=>{const x=q[0]*w,y=q[1]*h;if(!i){cx.moveTo(x,y);cx.lineTo(x+.01,y)}else{const pr=s[i-1],mx=(pr[0]*w+x)/2,my=(pr[1]*h+y)/2;cx.quadraticCurveTo(pr[0]*w,pr[1]*h,mx,my)}});cx.stroke()}},
+    clear(){p.strokes=[];p.counted=false;clearTimeout(p.tm);el.classList.remove('ok');p.draw()}};
+  const pt=e=>{const b=cv.getBoundingClientRect();return[(e.clientX-b.left)/b.width,(e.clientY-b.top)/b.height]};
+  let cur=null;
+  cv.addEventListener('pointerdown',e=>{clearTimeout(p.tm);cv.setPointerCapture(e.pointerId);cur=[pt(e)];p.strokes.push(cur);hist.push(p);p.draw();onStroke()});
+  cv.addEventListener('pointermove',e=>{if(!cur)return;cur.push(pt(e));p.draw()});
+  const end=()=>{if(cur){clearTimeout(p.tm);p.tm=setTimeout(()=>autoCheck(p),900)}cur=null};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+  new ResizeObserver(()=>p.draw()).observe(cv);
+  return p;
+}
+const big=Pad($('big'));
+let row=[],pads=[];
+function makeRow(n){if(row.length===n)return;$('row').innerHTML='<div class="cell"></div>'.repeat(n);row=[...$('row').children].map(Pad);pads=[big,...row]}
+makeRow(6);
+const key=()=>wd?wd[0]:ch(ALL[idx]);
+const updChk=()=>{const n=cnt[key()]||0;$('chk').textContent=`+1 직접 추가${n?` (지금까지 ${n}회)`:''}`};
+let autoSay=st('kana-say')!==false;
+function say(t){try{if(!t||!('speechSynthesis' in window))return;const S=speechSynthesis;S.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ja-JP';const v=S.getVoices().find(v=>/^ja/i.test(v.lang));if(v)u.voice=v;u.rate=.8;S.speak(u)}catch(e){}}
+const sayNow=()=>say(wd?wd[0]:ch(ALL[idx]));const sayAuto=()=>{if(autoSay)setTimeout(sayNow,150)};
+const HINT='다 쓰고 손을 떼면 1초 뒤 자동으로 횟수가 올라가요. 5번 쓰면 다음으로 넘어가요.';
+let rp=0,wsrc=null,advT=0;const GOAL=5;
+function nextItem(){clearTimeout(advT);rp=0;
+  if(wd&&wsrc){const L=wsrc.t==='v'?V[wsrc.c][2]:SN[wsrc.c][1];wsrc.n=(wsrc.n+1)%L.length;const x=L[wsrc.n];
+    wd=wsrc.t==='v'?x:[x[0].replace(/ /g,''),'',x[1],x[2]];show()}
+  else go(idx+1);sayAuto()}
+function addCount(k,msg){cnt[k]=(cnt[k]||0)+1;st('kana-cnt',cnt);const r=$('res'),nm=testing&&!reveal?`“${ALL[idx].k}”`:k;
+  r.hidden=false;r.className='res ok';
+  if(testing||k!==key()){r.innerHTML=`✓ ${nm} 연습 ${cnt[k]}회째!<small>${msg}</small>`}
+  else{rp++;if(rp>=GOAL){r.innerHTML=`✓ ${nm} ${GOAL}번 완료! 다음으로 넘어가요.<small>누적 연습 ${cnt[k]}회</small>`;clearTimeout(advT);advT=setTimeout(nextItem,1300)}
+  else r.innerHTML=`✓ ${nm} ${rp} / ${GOAL}번<small>${msg} · 누적 연습 ${cnt[k]}회</small>`}
+  if(!wd||k!==wd[0]){const c=ch(ALL[idx]);$('tag').textContent=(idx<46?'청음':'탁음·반탁음')+' · '+(idx+1)+'/'+ALL.length+(cnt[c]?` · 연습 ${cnt[c]}회`:'')}
+  updChk();table();vocab();sents()}
+const isDone=p=>{const c=p.g.textContent;return !!c&&p.strokes.length>=need(c)};
+autoCheck=p=>{
+  if(p===big||!wd){if(p.counted||!isDone(p))return;p.counted=true;p.el.classList.add('ok');
+    addCount(ch(ALL[idx]),p===big?'칸을 비웠어요. 한 번 더 써 보세요.':'줄 연습 칸도 한 칸씩 자동으로 세요.');
+    if(p===big)setTimeout(()=>big.clear(),700);return}
+  const cells=row.filter(q=>q.g.textContent);if(!cells.every(isDone)||cells[0].counted)return;
+  cells.forEach(q=>{q.counted=true;q.el.classList.add('ok')});addCount(wd[0],'칸을 비웠어요. 한 번 더 써 보세요.');setTimeout(()=>row.forEach(q=>q.clear()),900)};
+const ROWOP=[.32,.2,.1,0,0,0],GOP=[.32,.14,0],GNAME=['진하게','연하게','숨김'];
+function show(){
+  const x=ALL[idx],c=ch(x),hide=testing&&!reveal;
+  const wc=wd?[...wd[0]]:null;makeRow(wc?Math.max(6,wc.length):6);
+  big.g.textContent=c;row.forEach((p,i)=>p.g.textContent=wc?(wc[i]||''):c);pads.forEach(p=>p.clear());hist.length=0;
+  big.g.style.opacity=hide?0:GOP[glv];
+  row.forEach((p,i)=>p.g.style.opacity=hide||glv===2?0:wc?(glv?.14:.3):ROWOP[i]*(glv?0.6:1));
+  $('rl').textContent=wd?`단어·문장 연습 — ${wd[0]} [${wd[2]}] : ${wd[3]}`:'줄 연습 — 갈수록 보조 글자가 옅어져요';$('wx').hidden=!wd;
+  document.querySelectorAll('.w').forEach(b=>b.setAttribute('aria-current',!!wd&&b.dataset.w===wd[0]));
+  $('ro').textContent=hide?'?':x.r;$('ko').textContent=hide?'':'['+x.k+']';
+  $('tag').textContent=(idx<46?'청음':'탁음·반탁음')+' · '+(idx+1)+'/'+ALL.length+(cnt[c]?` · 연습 ${cnt[c]}회`:'');{const r=$('res');r.hidden=false;r.className='res tip';r.textContent=HINT}updChk();
+  $('testMsg').textContent=hide?`“${x.r}” [${x.k}] 를 ${kat?'가타카나':'히라가나'}로 써 보세요. 다 썼으면 ‘정답 보기’를 누르세요.`:'정답이에요. 내가 쓴 글자와 비교해 보세요. ‘다음’을 누르면 새 문제가 나와요.';
+  $('tst').textContent=testing?(reveal?'테스트 끝내기':'정답 보기'):'테스트 모드';
+  $('dn').classList.toggle('on',done.has(c));
+  document.querySelectorAll('.k').forEach(b=>{const i=+b.dataset.i;b.setAttribute('aria-current',i===idx);});
+}
+function table(){
+  const mk=(arr,off)=>arr.map(x=>{if(x.c==='・')return'<div class="k x"></div>';const i=ALL.indexOf(x),c=ch(x);
+    return`<button class="k${done.has(c)?' d':''}" data-i="${i}" aria-label="${c} ${x.r}">${cnt[c]?`<s>${cnt[c]}</s>`:''}<b>${c}</b><i>${x.r}</i></button>`}).join('');
+  $('t1').innerHTML=mk(T1);$('t2').innerHTML=mk(T2);
+  const n=ALL.filter(x=>done.has(ch(x))).length;
+  const tot=Object.values(cnt).reduce((a,b)=>a+b,0);$('cnt').textContent=`외운 글자 ${n} / ${ALL.length}${tot?` · 총 연습 ${tot}회`:''}`;$('prog').style.width=(n/ALL.length*100)+'%';
+  $('tips').innerHTML=TIPS.map(([s,t])=>`<div class="tip"><div class="p">${[...s].map(c=>`<button data-c="${c}">${c}</button>`).join('')}</div><p>${t}</p></div>`).join('');
+}
+const go=i=>{clearTimeout(advT);rp=0;idx=(i+ALL.length)%ALL.length;reveal=false;show();sayAuto()};
+const rnd=()=>Math.floor(Math.random()*ALL.length);
+document.addEventListener('click',e=>{const sy=e.target.closest('.wsp');if(sy){say(sy.dataset.say);return}
+  const sb=e.target.closest('.w.s');if(sb){setView('write');clearTimeout(advT);rp=0;wsrc={t:'s',c:sc,n:+sb.dataset.n};const x=SN[sc][1][+sb.dataset.n];wd=[x[0].replace(/ /g,''),'',x[1],x[2]];testing=false;reveal=false;document.body.classList.remove('testing');show();sayAuto();$('row').scrollIntoView({behavior:'smooth',block:'center'});return}
+  const sp=e.target.closest('[data-sc]');if(sp){sc=+sp.dataset.sc;sents();return}
+  const w=e.target.closest('.w');if(w){setView('write');clearTimeout(advT);rp=0;wsrc={t:'v',c:vc,n:+w.dataset.n};wd=V[vc][2][+w.dataset.n];testing=false;reveal=false;document.body.classList.remove('testing');show();sayAuto();$('row').scrollIntoView({behavior:'smooth',block:'center'});return}
+  const vb=e.target.closest('[data-v]');if(vb){vc=+vb.dataset.v;vocab();return}
+const k=e.target.closest('.k:not(.x)');if(k){wd=null;testing=false;document.body.classList.remove('testing');go(+k.dataset.i);if(innerWidth<860)$('pad').scrollIntoView({behavior:'smooth'});return}
+  const t=e.target.closest('[data-c]');if(t){const c=t.dataset.c,isK=c.charCodeAt(0)>=0x30A0;if(isK!==kat)setMode(isK);wd=null;const base=isK?String.fromCharCode(c.charCodeAt(0)-0x60):c;testing=false;document.body.classList.remove('testing');go(ALL.findIndex(x=>x.c===base));$('pad').scrollIntoView({behavior:'smooth'})}});
+$('prev').onclick=()=>go(testing?rnd():idx-1);
+$('next').onclick=()=>go(testing?rnd():idx+1);
+$('undo').onclick=()=>{const p=hist.pop();if(p){p.strokes.pop();p.draw()}updChk()};
+$('chk').onclick=()=>{addCount(key(),'직접 추가했어요.');pads.forEach(p=>p.clear());hist.length=0};
+$('clr').onclick=()=>{pads.forEach(p=>p.clear());hist.length=0};
+$('gd').onclick=()=>{glv=(glv+1)%3;$('gd').textContent='보조 글자: '+GNAME[glv];const keep=pads.map(p=>p.strokes);show();pads.forEach((p,i)=>{p.strokes=keep[i];p.draw()})};
+$('dn').onclick=()=>{const c=ch(ALL[idx]);done.has(c)?done.delete(c):done.add(c);st('kana-done',[...done]);table();show()};
+$('tst').onclick=()=>{if(!testing){wd=null;testing=true;document.body.classList.add('testing');go(rnd())}
+  else if(!reveal){reveal=true;const keep=pads.map(p=>p.strokes);show();pads.forEach((p,i)=>{p.strokes=keep[i];p.draw()})}
+  else{testing=false;reveal=false;document.body.classList.remove('testing');show()}setView('write')};
+function setMode(k){clearTimeout(advT);rp=0;kat=k;$('mH').setAttribute('aria-pressed',!k);$('mK').setAttribute('aria-pressed',k);table();show()}
+$('mH').onclick=()=>setMode(false);$('mK').onclick=()=>setMode(true);
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight')$('next').click();if(e.key==='ArrowLeft')$('prev').click();if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();$('undo').click()}});
+function vocab(){
+  $('vt').innerHTML=V.map((v,i)=>`<button data-v="${i}" aria-pressed="${i===vc}">${v[0]} <span style="opacity:.6">${v[2].length}</span></button>`).join('');
+  $('vnote').innerHTML=V[vc][1];
+  $('wg').innerHTML=V[vc][2].map((w,n)=>`<div class="wc"><button class="wsp spk sm" data-say="${w[0]}" aria-label="${w[0]} 발음 듣기"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button><button class="w" data-n="${n}" data-w="${w[0]}" aria-current="${!!wd&&wd[0]===w[0]}"><b>${w[0]}</b><span class="kj">${w[1]?w[1]+' · ':''}[${w[2]}]</span><span class="m">${w[3]}</span>${w[4]?`<span class="x">${w[4]}</span>`:''}${cnt[w[0]]?`<span class="x">연습 ${cnt[w[0]]}회</span>`:''}</button></div>`).join('');
+}
+function sents(){
+  $('st').innerHTML=SN.map((g,i)=>`<button data-sc="${i}" aria-pressed="${i===sc}">${g[0]} <span style="opacity:.6">${g[1].length}</span></button>`).join('');
+  $('sg').innerHTML=SN[sc][1].map((x,n)=>{const k=x[0].replace(/ /g,'');return`<div class="wc"><button class="wsp spk sm" data-say="${k}" aria-label="문장 발음 듣기"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg></button><button class="w s" data-n="${n}" data-w="${k}" aria-current="${!!wd&&wd[0]===k}"><b>${x[0]}</b><span class="kj">[${x[1]}]</span><span class="m">${x[2]}</span>${cnt[k]?`<span class="x">연습 ${cnt[k]}회</span>`:''}</button></div>`}).join('');
+}
+sents();
+function setView(v){document.querySelectorAll('[data-view]').forEach(el=>el.hidden=el.dataset.view!==v);
+  document.querySelectorAll('[data-go]').forEach(b=>b.setAttribute('aria-current',b.dataset.go===v||(v==='write'&&testing&&b.dataset.go==='test')));st('kana-view',v)}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>{const g=b.dataset.go;
+  if(g==='test'){setView('write');if(!testing)$('tst').click();setView('write')}else{if(g==='write'&&testing){testing=false;reveal=false;document.body.classList.remove('testing');show()}setView(g)}
+  scrollTo(0,0)});
+$('spk').onclick=sayNow;$('spk2').onclick=sayNow;
+const sndTxt=()=>{$('snd').textContent='자동 발음: '+(autoSay?'켜짐':'꺼짐')};sndTxt();
+$('snd').onclick=()=>{autoSay=!autoSay;st('kana-say',autoSay);sndTxt();if(autoSay)sayNow()};
+if('speechSynthesis' in window){try{speechSynthesis.getVoices();speechSynthesis.onvoiceschanged=()=>speechSynthesis.getVoices()}catch(e){}}else{$('spk').hidden=true;$('spk2').hidden=true;$('snd').hidden=true}
+$('wx').onclick=()=>{clearTimeout(advT);rp=0;wd=null;wsrc=null;show()};
+vocab();table();show();setView(['write','words','sent'].includes(st('kana-view'))?st('kana-view'):'write');
+if(document.fonts)document.fonts.ready.then(show);
+}
+</script>
+<script>if('serviceWorker' in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
+</body>
+</html>
