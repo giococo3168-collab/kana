@@ -99,8 +99,9 @@ h2 span{font-size:14px;color:var(--mute);font-weight:400}
 .sg .w b{font-size:21px;line-height:1.35}
 [hidden]{display:none!important}
 body{padding-bottom:calc(76px + env(safe-area-inset-bottom))}
-.tab{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));background:var(--paper);border-top:2px solid var(--grid);padding-bottom:env(safe-area-inset-bottom)}
-.tab button{border:0;background:none;min-height:64px;font-size:13px;font-weight:600;color:var(--mute);display:grid;place-items:center;gap:0;padding:6px 0}
+.tab{position:fixed;left:0;right:0;bottom:0;z-index:10;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));background:var(--paper);border-top:2px solid var(--grid);padding-bottom:env(safe-area-inset-bottom)}
+.tab a{text-decoration:none}
+.tab button,.tab a{border:0;background:none;min-height:64px;font-size:13px;font-weight:600;color:var(--mute);display:grid;place-items:center;gap:0;padding:6px 0}
 .tab b{font:600 24px/1 "Klee One",serif}
 .tab button[aria-current=true]{color:var(--grid)}
 .tips[data-view=words],.tips[data-view=sent]{border-top:0}
@@ -184,6 +185,7 @@ canvas{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
   <button data-go="words"><b>語</b>단어</button>
   <button data-go="sent"><b>文</b>문장</button>
   <button data-go="test"><b>？</b>테스트</button>
+  <a href="talk/" aria-label="회화 말하기 연습"><b>話</b>회화</a>
 </nav>
 <script>
 {
